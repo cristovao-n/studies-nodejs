@@ -1,0 +1,14 @@
+{
+  "name": "image-transform-brightness",
+  "version": "1.0.0",
+  "description": "A NodeJS script to decrease the brightness of images",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cristovão Neto",
+  "license": "ISC",
+  "dependencies": {
+    "sharp": "^0.30.5"
+  }
+}
