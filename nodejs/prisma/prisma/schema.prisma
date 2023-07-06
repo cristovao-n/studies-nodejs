@@ -10,13 +10,130 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id   Int    @id @default(autoincrement())
-  name String
-}
-
 // npx prisma migrate dev --name init
 // npx prisma generate (generates prisma client)
 
 //  row structure of the model
 // [name] [type] [field modifier] [field attributes]
+
+// User[Admin] n..n Contest
+// User[Participant] n..n Contest
+
+// Contest 1..n Rule
+// Contest 1..n Question
+// Contest 1..n Category
+
+// Question 1..n Constraint
+// Question 1..n InputOutputExample
+// Question n..n Category
+// Question 1..n Submission
+
+// Category 1..n Submission
+
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String
+  password String
+  role     UserRole
+}
+
+model Contest {
+  id          Int      @id @default(autoincrement())
+  name        String
+  cover       String
+  description String
+  place       String
+  capacity    Int
+  startDate   DateTime
+  endDate     DateTime
+}
+
+model ContestAdmin {
+  id        Int @id @default(autoincrement())
+  contestId Int
+  userId    Int
+}
+
+model ContestParticipant {
+  id         Int @id @default(autoincrement())
+  contestId  Int
+  userId     Int
+  categoryId Int
+}
+
+model Rule {
+  id        Int    @id @default(autoincrement())
+  contestId Int
+  text      String
+}
+
+model Question {
+  id        Int @id @default(autoincrement())
+  contestId Int
+
+  balloonColor      String
+  name              String
+  inputExplanation  String
+  outputExplanation String
+  testsFileInput    String
+  testsFileOutput   String
+}
+
+// question variables contraints
+model Constraint {
+  id         Int    @id @default(autoincrement())
+  questionId Int
+  text       String
+}
+
+// examples that are shown to the participant
+model InputOutputExample {
+  id         Int    @id @default(autoincrement())
+  questionId Int
+  input      String
+  output     String
+}
+
+model Category {
+  id        Int @id @default(autoincrement())
+  contestId Int
+
+  name String
+}
+
+model QuestionCategory {
+  id         Int @id @default(autoincrement())
+  questionId Int
+  categoryId Int
+}
+
+model Submission {
+  id         Int @id @default(autoincrement())
+  userId     Int
+  questionId Int
+  categoryId Int
+
+  code     String
+  language String
+  status   SubmissionStatus
+}
+
+enum UserRole {
+  ADMIN
+  PARTICIPANT
+}
+
+enum SubmissionLanguage {
+  JAVA
+  PYTHON
+}
+
+enum SubmissionStatus {
+  ACCEPTED
+  COMPILATION_ERROR
+  RUNTIME_ERROR
+  WRONG_ANSWER
+  PRESENTATION_ERROR
+  TIMEOUT
+}
