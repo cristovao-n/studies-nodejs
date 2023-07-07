@@ -5,6 +5,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -35,9 +39,11 @@ model Admin {
   id       Int       @id @default(autoincrement())
   contests Contest[]
 
-  name     String
-  email    String
-  password String
+  name      String
+  email     String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Participant {
@@ -45,9 +51,11 @@ model Participant {
   submissions Submission[]
   contests    ParticipantsJoinContests[]
 
-  name     String
-  email    String
-  password String
+  name      String
+  email     String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Contest {
@@ -58,13 +66,16 @@ model Contest {
   admins       Admin[]
   participants ParticipantsJoinContests[]
 
-  name        String
+  acronym     String
+  fullName    String
   cover       String
   description String
   place       String
   capacity    Int
   startDate   DateTime
   endDate     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // Explicit many-to-many relation, since the relation has an extra attribute: levelId
@@ -83,7 +94,9 @@ model Rule {
   contestId Int
   contest   Contest @relation(fields: [contestId], references: [id])
 
-  text String
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Question {
@@ -101,6 +114,8 @@ model Question {
   outputExplanation String
   testsFileInput    String
   testsFileOutput   String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 // question variables contraints
@@ -109,7 +124,9 @@ model Constraint {
   questionId Int
   question   Question @relation(fields: [questionId], references: [id])
 
-  text String
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // examples that are shown to the participant
@@ -118,8 +135,10 @@ model InputOutputExample {
   questionId Int
   question   Question @relation(fields: [questionId], references: [id])
 
-  input  String
-  output String
+  input     String
+  output    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Level {
@@ -130,13 +149,10 @@ model Level {
   questions    Question[]
   participants ParticipantsJoinContests[]
 
-  name String
-}
-
-model QuestionLevel {
-  id         Int @id @default(autoincrement())
-  questionId Int
-  levelId    Int
+  label     String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Submission {
@@ -149,8 +165,10 @@ model Submission {
   level         Level            @relation(fields: [levelId], references: [id])
   status        SubmissionStatus
 
-  code     String
-  language String
+  code      String
+  language  SubmissionLanguage
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 }
 
 enum SubmissionLanguage {
@@ -159,6 +177,7 @@ enum SubmissionLanguage {
 }
 
 enum SubmissionStatus {
+  PENDING
   ACCEPTED
   COMPILATION_ERROR
   RUNTIME_ERROR
