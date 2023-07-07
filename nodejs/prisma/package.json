@@ -7,7 +7,11 @@
     "dev": "nodemon src/script.ts",
     "migrations": "prisma migrate dev",
     "database-client": "prisma studio",
-    "database-diagram": "prisma generate"
+    "generate-prisma-client": "prisma generate",
+    "database-seed": "prisma db seed"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +20,7 @@
     "@types/node": "^20.3.3",
     "nodemon": "^2.0.22",
     "prisma": "^4.16.2",
+    "prisma-erd-generator": "^1.6.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },
