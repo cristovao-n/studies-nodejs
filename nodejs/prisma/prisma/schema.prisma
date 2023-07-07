@@ -13,33 +13,51 @@ datasource db {
 // npx prisma migrate dev --name init
 // npx prisma generate (generates prisma client)
 
-//  row structure of the model
+//  row structure of the models
 // [name] [type] [field modifier] [field attributes]
 
-// User[Admin] n..n Contest
-// User[Participant] n..n Contest
+// Admin n..n Contest OK
+// Participant n..n Contest OK
+// Participant 1..n Submission OK
 
-// Contest 1..n Rule
-// Contest 1..n Question
-// Contest 1..n Category
+// Contest 1..n Rule OK
+// Contest 1..n Question OK
+// Contest 1..n Level OK
 
-// Question 1..n Constraint
-// Question 1..n InputOutputExample
-// Question n..n Category
-// Question 1..n Submission
+// Question 1..n Constraint OK
+// Question 1..n InputOutputExample OK
+// Question n..n Level OK
+// Question 1..n Submission OK
 
-// Category 1..n Submission
+// Level 1..n Submission OK
 
-model User {
-  id       Int      @id @default(autoincrement())
+model Admin {
+  id       Int       @id @default(autoincrement())
+  contests Contest[]
+
   name     String
   email    String
   password String
-  role     UserRole
+}
+
+model Participant {
+  id          Int          @id @default(autoincrement())
+  submissions Submission[]
+  contests    Contest[]
+
+  name     String
+  email    String
+  password String
 }
 
 model Contest {
-  id          Int      @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
+  rules        Rule[]
+  questions    Question[]
+  levels       Level[]
+  admins       Admin[]
+  participants Participant[]
+
   name        String
   cover       String
   description String
@@ -56,21 +74,28 @@ model ContestAdmin {
 }
 
 model ContestParticipant {
-  id         Int @id @default(autoincrement())
-  contestId  Int
-  userId     Int
-  categoryId Int
+  id        Int @id @default(autoincrement())
+  contestId Int
+  userId    Int
+  levelId   Int
 }
 
 model Rule {
-  id        Int    @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   contestId Int
-  text      String
+  contest   Contest @relation(fields: [contestId], references: [id])
+
+  text String
 }
 
 model Question {
-  id        Int @id @default(autoincrement())
-  contestId Int
+  id                  Int                  @id @default(autoincrement())
+  contestId           Int
+  contest             Contest              @relation(fields: [contestId], references: [id])
+  constraints         Constraint[]
+  inputOutputExamples InputOutputExample[]
+  submissions         Submission[]
+  levels              Level[]
 
   balloonColor      String
   name              String
@@ -82,46 +107,51 @@ model Question {
 
 // question variables contraints
 model Constraint {
-  id         Int    @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   questionId Int
-  text       String
+  question   Question @relation(fields: [questionId], references: [id])
+
+  text String
 }
 
 // examples that are shown to the participant
 model InputOutputExample {
-  id         Int    @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   questionId Int
-  input      String
-  output     String
+  question   Question @relation(fields: [questionId], references: [id])
+
+  input  String
+  output String
 }
 
-model Category {
-  id        Int @id @default(autoincrement())
-  contestId Int
+model Level {
+  id          Int          @id @default(autoincrement())
+  contestId   Int
+  contest     Contest      @relation(fields: [contestId], references: [id])
+  submissions Submission[]
+  questions   Question[]
 
   name String
 }
 
-model QuestionCategory {
+model QuestionLevel {
   id         Int @id @default(autoincrement())
   questionId Int
-  categoryId Int
+  levelId    Int
 }
 
 model Submission {
-  id         Int @id @default(autoincrement())
-  userId     Int
-  questionId Int
-  categoryId Int
+  id            Int              @id @default(autoincrement())
+  participantId Int
+  participant   Participant      @relation(fields: [participantId], references: [id])
+  questionId    Int
+  question      Question         @relation(fields: [questionId], references: [id])
+  levelId       Int
+  level         Level            @relation(fields: [levelId], references: [id])
+  status        SubmissionStatus
 
   code     String
   language String
-  status   SubmissionStatus
-}
-
-enum UserRole {
-  ADMIN
-  PARTICIPANT
 }
 
 enum SubmissionLanguage {
