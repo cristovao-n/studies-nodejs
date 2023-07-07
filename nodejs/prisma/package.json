@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/script.ts"
+    "dev": "nodemon src/script.ts",
+    "migrations": "prisma migrate dev",
+    "database-client": "prisma studio",
+    "database-diagram": "prisma generate"
   },
   "keywords": [],
   "author": "",
