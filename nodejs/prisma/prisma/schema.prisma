@@ -41,9 +41,9 @@ model Admin {
 }
 
 model Participant {
-  id          Int          @id @default(autoincrement())
+  id          Int                        @id @default(autoincrement())
   submissions Submission[]
-  contests    Contest[]
+  contests    ParticipantsJoinContests[]
 
   name     String
   email    String
@@ -51,12 +51,12 @@ model Participant {
 }
 
 model Contest {
-  id           Int           @id @default(autoincrement())
+  id           Int                        @id @default(autoincrement())
   rules        Rule[]
   questions    Question[]
   levels       Level[]
   admins       Admin[]
-  participants Participant[]
+  participants ParticipantsJoinContests[]
 
   name        String
   cover       String
@@ -67,17 +67,15 @@ model Contest {
   endDate     DateTime
 }
 
-model ContestAdmin {
-  id        Int @id @default(autoincrement())
-  contestId Int
-  userId    Int
-}
-
-model ContestParticipant {
-  id        Int @id @default(autoincrement())
-  contestId Int
-  userId    Int
-  levelId   Int
+// Explicit many-to-many relation, since the relation has an extra attribute: levelId
+model ParticipantsJoinContests {
+  id            Int         @id @default(autoincrement())
+  contestId     Int
+  contest       Contest     @relation(fields: [contestId], references: [id])
+  participantId Int
+  participant   Participant @relation(fields: [participantId], references: [id])
+  levelId       Int
+  level         Level       @relation(fields: [levelId], references: [id])
 }
 
 model Rule {
@@ -125,11 +123,12 @@ model InputOutputExample {
 }
 
 model Level {
-  id          Int          @id @default(autoincrement())
-  contestId   Int
-  contest     Contest      @relation(fields: [contestId], references: [id])
-  submissions Submission[]
-  questions   Question[]
+  id           Int                        @id @default(autoincrement())
+  contestId    Int
+  contest      Contest                    @relation(fields: [contestId], references: [id])
+  submissions  Submission[]
+  questions    Question[]
+  participants ParticipantsJoinContests[]
 
   name String
 }
