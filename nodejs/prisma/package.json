@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/script.ts",
-    "migrations": "prisma migrate dev",
-    "database-client": "prisma studio",
-    "generate-prisma-client": "prisma generate",
-    "database-seed": "prisma db seed"
+    "database-migrations": "prisma migrate dev",
+    "api-client": "prisma generate",
+    "gui-client": "prisma studio",
+    "seed-database": "prisma db seed",
+    "reset-database": "prisma migrate reset"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
